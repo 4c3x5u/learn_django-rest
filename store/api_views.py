@@ -1,5 +1,5 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView,CreateAPIView, DestroyAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
@@ -50,3 +50,18 @@ class ProductCreation(CreateAPIView):
         except ValueError:
             raise ValidationError({'price': 'Must be a number'})
         return super().create(request, *args, **kwargs)
+
+
+class ProductDestroy(DestroyAPIView):
+    # these two fields are actually enough to create a DestroyAPIView
+    queryset = Product.objects.all()
+    lookup_field = 'id'
+
+    # we can help free up the cache by overwriting the delete function like so:
+    def delete(self, request, *args, **kwargs):
+        product_id = request.data.get('id')
+        response = super().delete(request, *args, **kwargs)
+        if response.status_code:
+            from django.core.cache import cache
+            cache.delete(f'product_data_{product_id}')
+        return response
