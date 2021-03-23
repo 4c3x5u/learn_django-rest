@@ -37,3 +37,15 @@ class ProductListTestCase(APITestCase):
         self.assertIsNone(response.data['previous'])
         self.assertEqual(response.data['count'], products_count)
         self.assertEqual(len(response.data['results']), products_count)
+
+
+class ProductUpdateTestCase(APITestCase):
+    def test_update_product(self):
+        product = Product.objects.first()
+        self.client.patch(f'/api/v1/products/{product.id}/', {
+            'name': 'New Product',
+            'description': 'Awesome product',
+            'price': 123.45
+        }, format='json')
+        updated_product = Product.objects.get(id=product.id)
+        self.assertEqual(updated_product.name, 'New Product')
