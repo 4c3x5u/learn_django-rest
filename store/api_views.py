@@ -34,10 +34,7 @@ class ProductList(ListAPIView):
             logger = logging.getLogger()
             now = timezone.now()
             logger.error(now)
-            return queryset.filter(
-                sale_start__lte=now,
-                sale_end__gte=now,
-            )
+            return queryset.filter(sale_start__lte=now, sale_end__gte=now)
         return queryset
 
 
@@ -88,10 +85,7 @@ class ProductStats(GenericAPIView):
     def get(self, request, format=None, id=None):
         obj = self.get_object()
         serializer = ProductStatSerializer({
-            'stats': {
-                '2021-01-01': [5, 10, 15],
-                '2021-01-02': [20, 1, 1]
-            }
+            'stats': {'2021-01-01': [5, 10, 15], '2021-01-02': [20, 1, 1]}
         })
         return Response(serializer.data)
 
