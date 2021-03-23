@@ -21,9 +21,19 @@ class ProductCreateTestCase(APITestCase):
 
 class ProductDestroyTestCase(APITestCase):
     def test_delete_product(self):
-        initial_count = Product.objects.count()
+        initial_product_count = Product.objects.count()
         product_id = Product.objects.first().id
         self.client.delete('/api/v1/products/{}/'.format(product_id))
-        self.assertEqual(Product.objects.count(), initial_count - 1)
+        self.assertEqual(Product.objects.count(), initial_product_count - 1)
         self.assertRaises(Product.DoesNotExist, Product.objects.get,
                           id=product_id)
+
+
+class ProductListTestCase(APITestCase):
+    def test_list_products(self):
+        products_count = Product.objects.count()
+        response = self.client.get('/api/v1/products/')
+        self.assertIsNone(response.data['next'])
+        self.assertIsNone(response.data['previous'])
+        self.assertEqual(response.data['count'], products_count)
+        self.assertEqual(len(response.data['results']), products_count)
