@@ -19,13 +19,13 @@ class ProductSerializer(serializers.ModelSerializer):
     price = serializers.DecimalField(min_value=1.00, max_value=100000.00,
                                      max_digits=None, decimal_places=2)
     sale_start = serializers.DateTimeField(
-        input_formats=['%I:%M %p %d %B %Y'], format=None, allow_null=True,
-        help_text='Accepted format is "12:01 PM 16 April 2021"',
+        required=False, allow_null=True, input_formats=['%I:%M %p %d %B %Y'],
+        format=None, help_text='Accepted format is "12:01 PM 16 April 2021"',
         style={'input_type': 'text', 'placeholder': '12:01 AM 28 July 2021'}
     )
     sale_end = serializers.DateTimeField(
-        input_formats=['%I:%M %p %d %B %Y'], format=None, allow_null=True,
-        help_text='Accepted format is "12:01 PM 16 April 2021"',
+        required=False, allow_null=True, input_formats=['%I:%M %p %d %B %Y'],
+        format=None, help_text='Accepted format is "12:01 PM 16 April 2021"',
         style={'input_type': 'text', 'placeholder': '12:01 AM 28 July 2021'}
     )
     photo = serializers.ImageField(default=None)
@@ -48,6 +48,10 @@ class ProductSerializer(serializers.ModelSerializer):
                 validated_data['warranty'].readlines()
             ).decode()
         return instance
+
+    def create(self, validated_data):
+        validated_data.pop('warranty')
+        return Product.objects.create(**validated_data)
 
 
 class ProductStatSerializer(serializers.Serializer):
