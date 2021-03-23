@@ -17,3 +17,13 @@ class ProductCreateTestCase(APITestCase):
         self.assertEqual(response.data['is_on_sale'], False)
         self.assertEqual(response.data['current_price'],
                          float(product_attrs['price']))
+
+
+class ProductDestroyTestCase(APITestCase):
+    def test_delete_product(self):
+        initial_count = Product.objects.count()
+        product_id = Product.objects.first().id
+        self.client.delete('/api/v1/products/{}/'.format(product_id))
+        self.assertEqual(Product.objects.count(), initial_count - 1)
+        self.assertRaises(Product.DoesNotExist, Product.objects.get,
+                          id=product_id)

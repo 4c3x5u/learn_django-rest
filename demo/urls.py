@@ -4,14 +4,17 @@ from django.contrib import admin
 from django.urls import path
 
 import store.views
-from store.api_views import ProductList, ProductCreation,\
-    ProductRetrieveUpdateDestroy, ProductStats
+import store.api_views
 
 urlpatterns = [
-    path('api/v1/products', ProductList.as_view()),
-    path('api/v1/products/new', ProductCreation.as_view()),
-    path('api/v1/products/<int:id>', ProductRetrieveUpdateDestroy.as_view()),
-    path('api/v1/products/<int:id>/stats', ProductStats.as_view()),
+    path('api/v1/products/', store.api_views.ProductList.as_view()),
+    path('api/v1/products/new', store.api_views.ProductCreate.as_view()),
+    path('api/v1/products/<int:id>/',
+        store.api_views.ProductRetrieveUpdateDestroy.as_view()
+    ),
+    path('api/v1/products/<int:id>/stats',
+        store.api_views.ProductStats.as_view(),
+    ),
 
     path('admin/', admin.site.urls),
     path('products/<int:id>/', store.views.show, name='show-product'),

@@ -30,15 +30,11 @@ class ProductList(ListAPIView):
         queryset = Product.objects.all()
         if on_sale.lower() == 'true':
             from django.utils import timezone
-            import logging
-            logger = logging.getLogger()
             now = timezone.now()
-            logger.error(now)
             return queryset.filter(sale_start__lte=now, sale_end__gte=now)
         return queryset
 
-
-class ProductCreation(CreateAPIView):
+class ProductCreate(CreateAPIView):
     serializer_class = ProductSerializer
 
     def create(self, request, *args, **kwargs):
@@ -59,7 +55,7 @@ class ProductRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
         product_id = request.data.get('id')
         response = super().delete(request, *args, **kwargs)
-        if response.status_code:
+        if response.status_code == 204:
             from django.core.cache import cache
             cache.delete(f'product_data_{product_id}')
         return response
