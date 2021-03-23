@@ -37,6 +37,7 @@ class ProductSerializer(serializers.ModelSerializer):
                   'sale_end', 'is_on_sale', 'current_price', 'cart_items',
                   'photo', 'warranty')
 
+    # noinspection PyMethodMayBeStatic
     def get_cart_items(self, instance):
         items = ShoppingCartItem.objects.filter(product=instance)
         return CartItemSerializer(items, many=True).data
